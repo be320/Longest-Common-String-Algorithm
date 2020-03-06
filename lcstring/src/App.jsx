@@ -10,6 +10,8 @@ function App() {
   const [draw, setDraw] = useState(false);
   const [matrix, setMatrix] = useState([]);
   const [lcs, setLcs] = useState([]);
+  const [cells, setCells] = useState([]);
+  const [horDim,setHorDim] = useState([])
 
   const handleChange = event => {
     if (event.target.name === "seq1") {
@@ -20,32 +22,33 @@ function App() {
   };
 
   const LCSmatrix = () => {
-    console.log(matrix);
-    console.log(lcs)
     if (draw) {
       return (
         <div>
-        <h2>LCS:  <h2 className="answer">{lcs}</h2></h2>
-        <ArcherContainer
-          strokeColor="rgba(255, 0, 0,0.7)"
-          arrowThickness={10}
-          strokeWidth={1}
-        >
-          <div className="table">
-            <table cellPadding="10px" cellSpacing="10px">
-              <tbody>
-                {matrix.map((value, index) => (
-                  <tr key={index}>
-                    {value.map((chr, ind) => (
-                      <td key={ind}>{chr}</td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </ArcherContainer>
-        <div> </div>
+          <h2>LCS: </h2>
+          <h2 className="answer">{lcs}</h2>
+          <div> </div>
+          <ArcherContainer
+            strokeColor="rgba(255, 0, 0,0.7)"
+            arrowThickness={10}
+            strokeWidth={1}
+          >
+            <div className="table">
+              <table cellPadding="10px" cellSpacing="10px">
+                <tbody>
+                  {matrix.map((value, index) => (
+                    <tr key={index}>
+                      {value.map(
+                        (chr, ind) =>
+                          cells[index * horDim + ind]
+                      )}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </ArcherContainer>
+          <div> </div>
         </div>
       );
     } else {
@@ -56,48 +59,124 @@ function App() {
   const run = () => {
     const hor = seq1.split("");
     const ver = seq2.split("");
+    const cl = [];
     const lcsMatrix = Array(ver.length + 2)
       .fill(null)
       .map(() => Array(hor.length + 2).fill(null));
 
-    //filling seq1 in first row
-    for (let colIndex = 0; colIndex <= hor.length + 1; colIndex++) {
-      if (colIndex < 2) lcsMatrix[0][colIndex] = "";
-      else lcsMatrix[0][colIndex] = hor[colIndex - 2];
-    }
-
-    //filling seq2 in first col
     for (let rowIndex = 0; rowIndex <= ver.length + 1; rowIndex++) {
-      if (rowIndex < 2) lcsMatrix[rowIndex][0] = "";
-      else lcsMatrix[rowIndex][0] = ver[rowIndex - 2];
-    }
+      for (let colIndex = 0; colIndex <= hor.length + 1; colIndex++) {
+        if (rowIndex === 0) {
+          if (colIndex < 2) lcsMatrix[0][colIndex] = "";
+          else lcsMatrix[0][colIndex] = hor[colIndex - 2];
 
-    //filling second row with zeroes
-    for (let colIndex = 1; colIndex <= hor.length + 1; colIndex++) {
-      lcsMatrix[1][colIndex] = 0;
-    }
+          cl.push(
+            <td key={0 + "" + colIndex}>
+              <ArcherElement id={0 + "" + colIndex}>
+                {lcsMatrix[0][colIndex]}
+              </ArcherElement>
+            </td>
+          );
+        } else if (rowIndex === 1) {
+          if (colIndex < 1) lcsMatrix[1][colIndex] = "";
+          else lcsMatrix[1][colIndex] = 0;
 
-    //fillimg second column with zeroes
-    for (let rowIndex = 1; rowIndex <= ver.length + 1; rowIndex++) {
-      lcsMatrix[rowIndex][1] = 0;
-    }
-
-    // Fill rest of the column that correspond to each of two strings.
-    for (let rowIndex = 2; rowIndex <= ver.length + 1; rowIndex++) {
-      for (let colIndex = 2; colIndex <= hor.length + 1; colIndex++) {
-        if (hor[colIndex - 2] === ver[rowIndex - 2]) {
-          //matching top-left arrow
-          lcsMatrix[rowIndex][colIndex] =
-            lcsMatrix[rowIndex - 1][colIndex - 1] + 1;
-          //draw top left arrow here
-        } else if (
-          lcsMatrix[rowIndex - 1][colIndex] >= lcsMatrix[rowIndex][colIndex - 1]
-        ) {
-          lcsMatrix[rowIndex][colIndex] = lcsMatrix[rowIndex - 1][colIndex];
-          //draw top arrow
+          cl.push(
+            <td key={1 + "" + colIndex}>
+              <ArcherElement id={1 + "" + colIndex}>
+                {lcsMatrix[1][colIndex]}
+              </ArcherElement>
+            </td>
+          );
         } else {
-          lcsMatrix[rowIndex][colIndex] = lcsMatrix[rowIndex][colIndex - 1];
-          //draw left arrow
+
+          if(colIndex===0)
+          {
+            lcsMatrix[rowIndex][colIndex]=ver[rowIndex-2]
+            cl.push(
+              <td key={rowIndex + "" + 0}>
+                <ArcherElement id={rowIndex + "" + 0}>
+                  {lcsMatrix[rowIndex][0]}
+                </ArcherElement>
+              </td>
+            );
+          }
+          else if(colIndex===1)
+          {
+            lcsMatrix[rowIndex][colIndex]=0
+            cl.push(
+              <td key={rowIndex + "" + 1}>
+                <ArcherElement id={rowIndex + "" + 1}>
+                  {lcsMatrix[rowIndex][1]}
+                </ArcherElement>
+              </td>
+            );
+
+          }
+
+         else if (hor[colIndex - 2] === ver[rowIndex - 2]) {
+            //matching top-left arrow
+            lcsMatrix[rowIndex][colIndex] =
+              lcsMatrix[rowIndex - 1][colIndex - 1] + 1;
+            //draw top left arrow here
+            cl.push(
+              <td key={rowIndex + "" + colIndex}>
+                <ArcherElement
+                  id={rowIndex + "" + colIndex}
+                  relations={[
+                    {
+                      targetId: rowIndex - 1 + "" + (colIndex - 1),
+                      targetAnchor: "right",
+                      sourceAnchor: "left"
+                    }
+                  ]}
+                >
+                  {lcsMatrix[rowIndex][colIndex]}
+                </ArcherElement>
+              </td>
+            );
+          } else if (
+            lcsMatrix[rowIndex - 1][colIndex] >=
+            lcsMatrix[rowIndex][colIndex - 1]
+          ) {
+            lcsMatrix[rowIndex][colIndex] = lcsMatrix[rowIndex - 1][colIndex];
+            //draw top arrow
+            cl.push(
+              <td key={rowIndex + "" + colIndex}>
+                <ArcherElement
+                  id={rowIndex + "" + colIndex}
+                  relations={[
+                    {
+                      targetId: rowIndex - 1 + "" + colIndex,
+                      targetAnchor: "bottom",
+                      sourceAnchor: "top"
+                    }
+                  ]}
+                >
+                  {lcsMatrix[rowIndex][colIndex]}
+                </ArcherElement>
+              </td>
+            );
+          } else {
+            lcsMatrix[rowIndex][colIndex] = lcsMatrix[rowIndex][colIndex - 1];
+            //draw left arrow
+            cl.push(
+              <td key={rowIndex + "" + colIndex}>
+                <ArcherElement
+                  id={rowIndex + "" + colIndex}
+                  relations={[
+                    {
+                      targetId: rowIndex + "" + (colIndex - 1),
+                      targetAnchor: "right",
+                      sourceAnchor: "left"
+                    }
+                  ]}
+                >
+                  {lcsMatrix[rowIndex][colIndex]}
+                </ArcherElement>
+              </td>
+            );
+          }
         }
       }
     }
@@ -106,21 +185,21 @@ function App() {
     const longestSequence = [];
     let columnIndex = hor.length;
     let rowIndex = ver.length;
+    setHorDim(hor.length+2)
 
-    while (columnIndex > 0 || rowIndex > 0) {
-      console.log(hor[columnIndex - 1])
+    while ( rowIndex >=1 && columnIndex >= 1) {
+      console.log(hor[columnIndex - 1]);
       if (hor[columnIndex - 1] === ver[rowIndex - 1]) {
         // Move by diagonal left-top.
         longestSequence.unshift(hor[columnIndex - 1]);
         columnIndex -= 1;
         rowIndex -= 1;
       } else if (
-        lcsMatrix[rowIndex-1][columnIndex] ===
+        lcsMatrix[rowIndex - 1][columnIndex] ===
         lcsMatrix[rowIndex][columnIndex]
       ) {
         // Move up.
         rowIndex -= 1;
-        
       } else {
         // Move left.
         columnIndex -= 1;
@@ -130,6 +209,7 @@ function App() {
     setLcs(longestSequence);
     setMatrix(lcsMatrix);
     setDraw(true);
+    setCells(cl);
   };
 
   return (
@@ -156,12 +236,13 @@ function App() {
         />
       </div>
       <Button
-          onClick={run}
+        onClick={run}
         variant="danger"
-          style={{ width: "100px", fontWeight: "bold" }}
-        >
-          RUN
-        </Button>
+        style={{ width: "100px", fontWeight: "bold" }}
+      >
+        RUN
+      </Button>
+     
 
       <LCSmatrix />
     </div>
