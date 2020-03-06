@@ -20,6 +20,10 @@ h1{
   text-align: center;
 }
 
+.answer{
+  color: green;
+}
+
 table,td,th{
  border:1px solid black;
 }
