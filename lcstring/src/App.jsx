@@ -187,7 +187,7 @@ function App() {
     let rowIndex = ver.length;
     setHorDim(hor.length+2)
 
-    while ( rowIndex >=1 && columnIndex >= 1) {
+    while ( rowIndex >0 && columnIndex > 0) {
       console.log(hor[columnIndex - 1]);
       if (hor[columnIndex - 1] === ver[rowIndex - 1]) {
         // Move by diagonal left-top.
