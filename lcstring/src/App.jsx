@@ -1,4 +1,4 @@
-import React, { useState , useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import "./App.css";
 import { TextField } from "@material-ui/core";
 import { Button } from "react-bootstrap";
@@ -11,20 +11,19 @@ function App() {
   const [matrix, setMatrix] = useState([]);
   const [lcs, setLcs] = useState([]);
   const [cells, setCells] = useState([]);
-  const [horDim,setHorDim] = useState([])
-  const [shade,setShade] = useState([])
-
+  const [horDim, setHorDim] = useState([]);
+  const [shade, setShade] = useState([]);
 
   useEffect(() => {
-   console.log('shade')
-  },[shade]);
+    console.log("shade");
+  }, [shade]);
 
-  const handleShade = (param) =>{
-    setShade(param)
-  }
+  const handleShade = param => {
+    setShade(param);
+  };
 
   const handleChange = event => {
-    setShade([])
+    setShade([]);
     if (event.target.name === "seq1") {
       setSeq1(event.target.value);
     } else if (event.target.name === "seq2") {
@@ -49,10 +48,7 @@ function App() {
                 <tbody>
                   {matrix.map((value, index) => (
                     <tr key={index}>
-                      {value.map(
-                        (chr, ind) =>
-                          cells[index * horDim + ind]
-                      )}
+                      {value.map((chr, ind) => cells[index * horDim + ind])}
                     </tr>
                   ))}
                 </tbody>
@@ -67,40 +63,38 @@ function App() {
     }
   };
 
-  const run =  () => {
+  const run = () => {
     const hor = seq1.split("");
     const ver = seq2.split("");
     const cl = [];
-    let shadeMe=false
-  
+    let shadeMe = false;
+
     const lcsMatrix = Array(ver.length + 2)
       .fill(null)
       .map(() => Array(hor.length + 2).fill(null));
 
-      let shadeInit = Array(ver.length + 2)
+    let shadeInit = Array(ver.length + 2)
       .fill(false)
-      .map(() => Array(hor.length + 2).fill(false))
-
-    
-
-  
-
+      .map(() => Array(hor.length + 2).fill(false));
 
     for (let rowIndex = 0; rowIndex <= ver.length + 1; rowIndex++) {
       for (let colIndex = 0; colIndex <= hor.length + 1; colIndex++) {
-        if(shade.length>2){
-          shadeMe =  shade[rowIndex][colIndex]
-          console.log(shade)
-        }else{
-          shadeMe =  shadeInit[rowIndex][colIndex]
+        if (shade.length > 2) {
+          shadeMe = shade[rowIndex][colIndex];
+          console.log(shade);
+        } else {
+          shadeMe = shadeInit[rowIndex][colIndex];
         }
-       
+
         if (rowIndex === 0) {
           if (colIndex < 2) lcsMatrix[0][colIndex] = "";
           else lcsMatrix[0][colIndex] = hor[colIndex - 2];
 
           cl.push(
-            <td key={0 + "" + colIndex} style={{backgroundColor: shadeMe?"#fdff96":"#fff"}}>
+            <td
+              key={0 + "" + colIndex}
+              style={{ backgroundColor: shadeMe ? "#fdff96" : "#fff" }}
+            >
               <ArcherElement id={0 + "" + colIndex}>
                 {lcsMatrix[0][colIndex]}
               </ArcherElement>
@@ -111,45 +105,50 @@ function App() {
           else lcsMatrix[1][colIndex] = 0;
 
           cl.push(
-            <td key={1 + "" + colIndex} style={{backgroundColor: shadeMe?"#fdff96":"#fff"}}>
+            <td
+              key={1 + "" + colIndex}
+              style={{ backgroundColor: shadeMe ? "#fdff96" : "#fff" }}
+            >
               <ArcherElement id={1 + "" + colIndex}>
                 {lcsMatrix[1][colIndex]}
               </ArcherElement>
             </td>
           );
         } else {
-
-          if(colIndex===0)
-          {
-            lcsMatrix[rowIndex][colIndex]=ver[rowIndex-2]
+          if (colIndex === 0) {
+            lcsMatrix[rowIndex][colIndex] = ver[rowIndex - 2];
             cl.push(
-              <td key={rowIndex + "" + 0} style={{backgroundColor: shadeMe?"#fdff96":"#fff"}}>
+              <td
+                key={rowIndex + "" + 0}
+                style={{ backgroundColor: shadeMe ? "#fdff96" : "#fff" }}
+              >
                 <ArcherElement id={rowIndex + "" + 0}>
                   {lcsMatrix[rowIndex][0]}
                 </ArcherElement>
               </td>
             );
-          }
-          else if(colIndex===1)
-          {
-            lcsMatrix[rowIndex][colIndex]=0
+          } else if (colIndex === 1) {
+            lcsMatrix[rowIndex][colIndex] = 0;
             cl.push(
-              <td key={rowIndex + "" + 1} style={{backgroundColor: shadeMe?"#fdff96":"#fff"}}>
+              <td
+                key={rowIndex + "" + 1}
+                style={{ backgroundColor: shadeMe ? "#fdff96" : "#fff" }}
+              >
                 <ArcherElement id={rowIndex + "" + 1}>
                   {lcsMatrix[rowIndex][1]}
                 </ArcherElement>
               </td>
             );
-
-          }
-
-         else if (hor[colIndex - 2] === ver[rowIndex - 2]) {
+          } else if (hor[colIndex - 2] === ver[rowIndex - 2]) {
             //matching top-left arrow
             lcsMatrix[rowIndex][colIndex] =
               lcsMatrix[rowIndex - 1][colIndex - 1] + 1;
             //draw top left arrow here
             cl.push(
-              <td key={rowIndex + "" + colIndex} style={{backgroundColor: shadeMe?"#fdff96":"#fff"}}>
+              <td
+                key={rowIndex + "" + colIndex}
+                style={{ backgroundColor: shadeMe ? "#fdff96" : "#fff" }}
+              >
                 <ArcherElement
                   id={rowIndex + "" + colIndex}
                   relations={[
@@ -164,14 +163,17 @@ function App() {
                 </ArcherElement>
               </td>
             );
-          }else if (
+          } else if (
             lcsMatrix[rowIndex - 1][colIndex] ===
             lcsMatrix[rowIndex][colIndex - 1]
           ) {
             lcsMatrix[rowIndex][colIndex] = lcsMatrix[rowIndex - 1][colIndex];
             //draw top arrow
             cl.push(
-              <td key={rowIndex + "" + colIndex} style={{backgroundColor: shadeMe?"#fdff96":"#fff"}}>
+              <td
+                key={rowIndex + "" + colIndex}
+                style={{ backgroundColor: shadeMe ? "#fdff96" : "#fff" }}
+              >
                 <ArcherElement
                   id={rowIndex + "" + colIndex}
                   relations={[
@@ -184,22 +186,24 @@ function App() {
                       targetId: rowIndex + "" + (colIndex - 1),
                       targetAnchor: "right",
                       sourceAnchor: "left"
-                    },
+                    }
                   ]}
                 >
                   {lcsMatrix[rowIndex][colIndex]}
                 </ArcherElement>
               </td>
             );
-          } 
-           else if (
+          } else if (
             lcsMatrix[rowIndex - 1][colIndex] >=
             lcsMatrix[rowIndex][colIndex - 1]
           ) {
             lcsMatrix[rowIndex][colIndex] = lcsMatrix[rowIndex - 1][colIndex];
             //draw top arrow
             cl.push(
-              <td key={rowIndex + "" + colIndex} style={{backgroundColor: shadeMe?"#fdff96":"#fff"}}>
+              <td
+                key={rowIndex + "" + colIndex}
+                style={{ backgroundColor: shadeMe ? "#fdff96" : "#fff" }}
+              >
                 <ArcherElement
                   id={rowIndex + "" + colIndex}
                   relations={[
@@ -218,7 +222,10 @@ function App() {
             lcsMatrix[rowIndex][colIndex] = lcsMatrix[rowIndex][colIndex - 1];
             //draw left arrow
             cl.push(
-              <td key={rowIndex + "" + colIndex} style={{backgroundColor: shadeMe?"#fdff96":"#fff"}}>
+              <td
+                key={rowIndex + "" + colIndex}
+                style={{ backgroundColor: shadeMe ? "#fdff96" : "#fff" }}
+              >
                 <ArcherElement
                   id={rowIndex + "" + colIndex}
                   relations={[
@@ -238,19 +245,17 @@ function App() {
       }
     }
 
-
     const longestSequence = [];
     let columnIndex = hor.length;
     let rowIndex = ver.length;
 
-    
-    setHorDim(hor.length+2)
+    setHorDim(hor.length + 2);
 
-    while ( rowIndex >0 && columnIndex > 0) {
+    while (rowIndex > 0 && columnIndex > 0) {
       console.log(hor[columnIndex - 1]);
       if (hor[columnIndex - 1] === ver[rowIndex - 1]) {
         // Move by diagonal left-top.
-        shadeInit[rowIndex+1][columnIndex+1] = true
+        shadeInit[rowIndex + 1][columnIndex + 1] = true;
         longestSequence.unshift(hor[columnIndex - 1]);
         columnIndex -= 1;
         rowIndex -= 1;
@@ -258,11 +263,11 @@ function App() {
         lcsMatrix[rowIndex - 1][columnIndex] ===
         lcsMatrix[rowIndex][columnIndex]
       ) {
-        shadeInit[rowIndex+1][columnIndex+1] = true
+        shadeInit[rowIndex + 1][columnIndex + 1] = true;
         // Move up.
         rowIndex -= 1;
       } else {
-        shadeInit[rowIndex+1][columnIndex+1] = true
+        shadeInit[rowIndex + 1][columnIndex + 1] = true;
         // Move left.
         columnIndex -= 1;
       }
@@ -272,9 +277,7 @@ function App() {
     setMatrix(lcsMatrix);
     setDraw(true);
     setCells(cl);
-    setShade(shadeInit)
-  
-    
+    setShade(shadeInit);
   };
 
   return (
@@ -308,7 +311,6 @@ function App() {
         RUN
       </Button>
       <p>Double Click to show Trace</p>
-     
 
       <LCSmatrix />
     </div>
