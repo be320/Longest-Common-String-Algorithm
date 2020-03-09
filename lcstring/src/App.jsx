@@ -260,8 +260,8 @@ function App() {
         columnIndex -= 1;
         rowIndex -= 1;
       } else if (
-        lcsMatrix[rowIndex - 1][columnIndex] ===
-        lcsMatrix[rowIndex][columnIndex]
+        lcsMatrix[rowIndex][columnIndex+1] >=
+        lcsMatrix[rowIndex+1][columnIndex]
       ) {
         shadeInit[rowIndex + 1][columnIndex + 1] = true;
         // Move up.
